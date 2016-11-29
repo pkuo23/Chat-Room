@@ -2,6 +2,8 @@
 
 import java.io.*;
 import java.net.*;
+import java.util.List;
+
 import javax.swing.*;
 
 
@@ -20,6 +22,8 @@ public class ChatClient extends Application{
 	private BufferedReader reader;
 	private PrintWriter writer;
 	public static Stage stage;
+	public static String serverIP;
+	public static List<String> chatters = new java.util.ArrayList<String>();
 
 	public void run() throws Exception {
 		initView();
