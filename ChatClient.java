@@ -4,56 +4,61 @@ package assignment7;
 import java.io.*;
 import java.net.*;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import javax.swing.*;
 
-
-import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import javafx.application.Application;
+
+import javafx.scene.control.TextArea;
+
+
+import javafx.scene.layout.VBox;
+
 
 import java.awt.*;
 import java.awt.event.*;
 
-public class ChatClient extends Application{
-	private JTextArea incoming;
-	private JTextField outgoing;
-	private BufferedReader reader;
-	private PrintWriter writer;
+public class ChatClient extends Application implements Initializable{
+	public BufferedReader reader;
+	public PrintWriter writer;
 	public static Stage stage;
 	public static String serverIP;
 	public static List<String> chatters = new java.util.ArrayList<String>();
 
 	public void run() throws Exception {
-		initView();
+		//initView();
 		setUpNetworking();
 	}
 
 	private void initView() {
-		JFrame frame = new JFrame("Ludicrously Simple Chat Client");
-		JPanel mainPanel = new JPanel();
-		incoming = new JTextArea(15, 50);
-		incoming.setLineWrap(true);
-		incoming.setWrapStyleWord(true);
-		incoming.setEditable(false);
-		JScrollPane qScroller = new JScrollPane(incoming);
-		qScroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		qScroller.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
-		outgoing = new JTextField(20);
-		JButton sendButton = new JButton("Send");
-		sendButton.addActionListener(new SendButtonListener());
-		mainPanel.add(qScroller);
-		mainPanel.add(outgoing);
-		mainPanel.add(sendButton);
-		frame.getContentPane().add(BorderLayout.CENTER, mainPanel);
-		frame.setSize(650, 500);
-		frame.setVisible(true);
+    	try {
+        	stage = new Stage();
+        	stage.setMinHeight(160);
+        	stage.setMinWidth(640);
+            Pane page = (Pane) FXMLLoader.load(ChatClient.class.getResource("chatwindow.fxml"));
+            Scene scene = new Scene(page);
+            stage.setScene(scene);
+            stage.setTitle("chat session");
+            stage.show();
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();}
+		
 
 	}
 
-	private void setUpNetworking() throws Exception {
+	public void setUpNetworking() throws Exception {
 		@SuppressWarnings("resource")
 		Socket sock = new Socket("127.0.0.1", 4242);
 		InputStreamReader streamReader = new InputStreamReader(sock.getInputStream());
@@ -64,19 +69,34 @@ public class ChatClient extends Application{
 		readerThread.start();
 	}
 
-	class SendButtonListener implements ActionListener {
-		public void actionPerformed(ActionEvent ev) {
-			writer.println(outgoing.getText());
-			writer.flush();
-			outgoing.setText("");
-			outgoing.requestFocus();
-		}
-	}
+    @FXML
+    public static TextField input;
+
+    @FXML
+    public static VBox userlist;
+
+    @FXML
+    private Button buttonSend;
+
+    @FXML
+    public static TextArea chatbox;
+    
+    public void initialize(URL arg0, ResourceBundle arg1) {
+    	buttonSend.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent e) {
+    writer.println(input.getText());
+    writer.flush();
+    chatbox.setText(input.getText());
+    input.clear();
+            }});
+
+}
 
 	public static void main(String[] args) {
 		try {
-			launch(args);
+			
 			new ChatClient().run();
+			launch(args);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -88,7 +108,7 @@ public class ChatClient extends Application{
 			try {
 				while ((message = reader.readLine()) != null) {
 					
-						incoming.append(message + "\n");
+						chatbox.appendText(message + "\n");
 				}
 			} catch (IOException ex) {
 				ex.printStackTrace();
@@ -112,7 +132,24 @@ public class ChatClient extends Application{
           throw ex;
         }
     }
+    public void start2(Stage primaryStage) throws Exception {
+        try {
+        	ChatClient.stage = primaryStage;
+        	primaryStage.setMinHeight(160);
+        	primaryStage.setMinWidth(640);
+            Pane page = (Pane) FXMLLoader.load(ChatClient.class.getResource("chatwindow.fxml"));
+            Scene scene = new Scene(page);
+            primaryStage.setScene(scene);
+            primaryStage.setTitle("chat session");
+            primaryStage.show();
+        } catch (Exception ex) {
+          System.out.println("ERROR: FILE NOT FOUND");
+          throw ex;
+        }
+    }
 }
+
+
 	
 	
 

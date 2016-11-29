@@ -4,8 +4,7 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: black;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: black;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="assignment7.ChatClient">
    <children>
       <TextArea fx:id="chatbox" layoutX="222.0" layoutY="14.0" prefHeight="314.0" prefWidth="371.0" AnchorPane.bottomAnchor="72.0" AnchorPane.leftAnchor="222.0" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="14.0" />
       <TextField fx:id="input" layoutX="220.0" layoutY="338.0" prefHeight="25.0" prefWidth="371.0" AnchorPane.bottomAnchor="37.0" AnchorPane.rightAnchor="9.0" />

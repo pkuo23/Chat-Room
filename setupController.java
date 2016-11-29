@@ -35,11 +35,14 @@ public class setupController implements Initializable{
             	}
             	ChatClient.stage.close();
             	try {
+            		 new ChatClient().run();
 					start(new Stage());
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
+            	System.out.println(ChatClient.serverIP);
+            	System.out.println(ChatClient.chatters);
             }
         });
     }
