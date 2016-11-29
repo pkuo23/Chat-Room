@@ -1,17 +1,25 @@
-package assignment7;
+
 
 import java.io.*;
 import java.net.*;
 import javax.swing.*;
+
+
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
+
 import java.awt.*;
 import java.awt.event.*;
 
-public class ChatClient {
+public class ChatClient extends Application{
 	private JTextArea incoming;
 	private JTextField outgoing;
 	private BufferedReader reader;
 	private PrintWriter writer;
-	
+	public static Stage stage;
 
 	public void run() throws Exception {
 		initView();
@@ -62,6 +70,7 @@ public class ChatClient {
 
 	public static void main(String[] args) {
 		try {
+			launch(args);
 			new ChatClient().run();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -81,4 +90,24 @@ public class ChatClient {
 			}
 		}
 	}
+	
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        try {
+        	stage = primaryStage;
+        	primaryStage.setMinHeight(160);
+        	primaryStage.setMinWidth(640);
+            Pane page = (Pane) FXMLLoader.load(ChatClient.class.getResource("setup.fxml"));
+            Scene scene = new Scene(page);
+            primaryStage.setScene(scene);
+            primaryStage.setTitle("Server Setup");
+            primaryStage.show();
+        } catch (Exception ex) {
+          System.out.println("ERROR: FILE NOT FOUND");
+          throw ex;
+        }
+    }
 }
+	
+	
+

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: black;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <TextArea fx:id="chatbox" layoutX="222.0" layoutY="14.0" prefHeight="314.0" prefWidth="371.0" AnchorPane.bottomAnchor="72.0" AnchorPane.leftAnchor="222.0" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="14.0" />
+      <TextField fx:id="input" layoutX="220.0" layoutY="338.0" prefHeight="25.0" prefWidth="371.0" AnchorPane.bottomAnchor="37.0" AnchorPane.rightAnchor="9.0" />
+      <Button fx:id="buttonSend" layoutX="220.0" layoutY="363.0" mnemonicParsing="false" text="Send" AnchorPane.bottomAnchor="12.0" AnchorPane.rightAnchor="337.0" />
+      <VBox fx:id="userlist" layoutX="14.0" layoutY="14.0" prefHeight="374.0" prefWidth="194.0" style="-fx-background-color: Gray;" AnchorPane.bottomAnchor="12.0" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="14.0" />
+   </children>
+</AnchorPane>
