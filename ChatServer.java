@@ -7,63 +7,110 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Scanner;
 
 public class ChatServer {
-	private ArrayList<PrintWriter> clientOutputStreams;
+    private static final int PORT = 9001;
+    private static HashSet<String> names = new HashSet<>();
+    private static HashSet<String> userNames = new HashSet<>();
+    private static HashSet<PrintWriter> writers = new HashSet<>();
+    private static int usersConnected = 0;
 
-	public static void main(String[] args) {
-		try {
-			new ChatServer().setUpNetworking();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+    public static void main(String[] args) {
+        System.out.println(new Date() + "\nChat Server online.\n");
 
-	private void setUpNetworking() throws Exception {
-		clientOutputStreams = new ArrayList<PrintWriter>();
-		@SuppressWarnings("resource")
-		ServerSocket serverSock = new ServerSocket(4242);
-		while (true) {
-			Socket clientSocket = serverSock.accept();
-			PrintWriter writer = new PrintWriter(clientSocket.getOutputStream());
-			clientOutputStreams.add(writer);
+        try (ServerSocket chatServer = new ServerSocket(PORT)) {
+            while (true) {
+                Socket socket = chatServer.accept();
+                new ClientHandler(socket).start();
+            }
+        } catch (IOException ioe) {}
+    }
 
-			Thread t = new Thread(new ClientHandler(clientSocket));
-			t.start();
-			System.out.println("got a connection");
-		}
+    private static String names() {
+        StringBuilder nameList = new StringBuilder();
 
-	}
+        for (String name : userNames) {
+            nameList.append(", ").append(name);
+        }
 
-	private void notifyClients(String message) {
+        return "In lobby: " + nameList.substring(2);
+    }
+
+    private static class ClientHandler extends Thread {
+        private String name;
+        private String serverSideName;
+        private Socket socket;
+        private BufferedReader in;
+        private PrintWriter out;
+
+        public ClientHandler(Socket socket) {
+            this.socket = socket;
+        }
+
+        @Override
+        public void run() {
+            try {
+                in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                out = new PrintWriter(socket.getOutputStream(), true);
+
+                out.println("SUBMIT_NAME");
+                name = in.readLine();
+                serverSideName = name.toLowerCase();
+
+                synchronized (names) {
+                    while (names.contains(serverSideName) || name == null || name.trim().isEmpty()) {
+                        out.println("RESUBMIT_NAME");
+                        name = in.readLine();
+                        serverSideName = name.toLowerCase();
+                    }
+                }
+
+                out.println("NAME_ACCEPTED");
+                System.out.println(name + " connected. IP: " + socket.getInetAddress().getHostAddress());
+
+                messageAll("CONNECT" + name);
+                userNames.add(name);
+                names.add(serverSideName);
+                writers.add(out);
+                out.println("INFO" + ++usersConnected + names());
 
 
-		for (PrintWriter writer : clientOutputStreams) {
-			writer.println(message);
-			writer.flush();
-		}
-	}
+                while (true) {
+                    String input = in.readLine();
 
-	class ClientHandler implements Runnable {
-		private BufferedReader reader;
+                    if (input == null || input.isEmpty()) {
+                        continue;
+                    }
 
-		public ClientHandler(Socket clientSocket) throws IOException {
-			Socket sock = clientSocket;
-			reader = new BufferedReader(new InputStreamReader(sock.getInputStream()));
-		}
+                    messageAll("MESSAGE " + name + ": " + input);
+                }
+            } catch (IOException e) {
+                if (name != null) {
+                    System.out.println(name + " disconnected.");
+                    userNames.remove(name);
+                    names.remove(serverSideName);
+                    writers.remove(out);
+                    messageAll("DISCONNECT" + name);
+                    usersConnected--;
+                }   
+            } finally {     
+                try {
+                    socket.close();
+                } catch (IOException e) {}
+            }
+        }
+    }
 
-		public void run() {
-			String message;
-			try {
-				while ((message = reader.readLine()) != null) {
-					System.out.println("read " + message);
-					notifyClients(message);
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
+    private static void messageAll(String... messages) {
+        if (!writers.isEmpty()){
+            for (String message : messages) {
+                for (PrintWriter writer : writers) {
+                    writer.println(message);
+                }
+            }
+        }
+    }
 }
